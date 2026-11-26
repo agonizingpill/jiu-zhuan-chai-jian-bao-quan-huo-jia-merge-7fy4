@@ -52,10 +52,12 @@ Compose 运行 Nginx、Python FastAPI、独立 Redis 消费进程、SQL 数据�
 |---|---|---|
 | 拆建来源凭单 | `/demolitions` /demolitions/confirm-release | `frontend/src/pages/demolitions.js` |
 | 砖垛孔形实测 | `/brick_stacks` /brick_stacks/survey-stack，/brick_stacks/confirm-moisture | `frontend/src/pages/brick_stacks.js` |
-| 货架分簇候选 | `/rack_candidates` /rack_candidates/suggest-pair，/rack_candidates/record-candidate | `frontend/src/pages/rack_candidates.js` |
+| 货架分簇候选 | `/rack_candidates` /rack_candidates/suggest-pair，/rack_candidates/record-candidate，/rack_candidates/arrange-pairs，/rack_candidates/rearrange-pairs | `frontend/src/pages/rack_candidates.js` |
 | 合垛货架卡 | `/rack_merges` /rack_merges/pack-rack | `frontend/src/pages/rack_merges.js` |
 
 SQL 实体与约束在 `backend/domain` 下维护。前端使用原生 ES modules。核心算子为 Birch。在孔隙比和砖长标准化空间逐批更新 BIRCH 子簇，返回当前同簇最邻近参考垛。
+
+`POST /rack_candidates/arrange-pairs` 执行首排：只选择来源已放行、水分已复测、`wet <= 6` 且未被货架卡占用的砖垛，按用途分别拟合孔形簇，并在同簇、两垛合计不超过 80 块的边中求全局最优配对。优化顺序为配对垛数最多 → 保留旧配对最多 → 总标准化孔形距离最小。`POST /rack_candidates/rearrange-pairs` 复用首排持久化的簇标签；已签货架卡及其砖垛保持不变，未被新方案保留的候选标记为 `superseded`，再签会返回 409。签架接口按货架卡编号幂等重试；PostgreSQL 事务咨询锁与候选/砖垛行锁保证签架和重排的并发顺序可串行化。
 
 模拟读数与审查范围仅用于保全操作演练。现有库存通过内置种子初始化。
 

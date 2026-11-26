@@ -27,11 +27,43 @@
     {
       "name": "token",
       "label": "计算号"
+    },
+    {
+      "name": "status",
+      "label": "状态"
+    },
+    {
+      "name": "distance",
+      "label": "孔形距离"
     }
   ],
   "layout": "split",
   "view": "grid",
   "actions": [
+    {
+      "name": "arrange_pairs",
+      "label": "首排配对",
+      "path": "/rack_candidates/arrange-pairs",
+      "fields": [],
+      "help": "取已放行、复测且湿度达标、未入架的砖垛，按用途和孔形簇生成每垛一次、每架不超过八十块的最优配对。",
+      "roles": [
+        "operator",
+        "reviewer"
+      ],
+      "success": "首排完成"
+    },
+    {
+      "name": "rearrange_pairs",
+      "label": "重排配对",
+      "path": "/rack_candidates/rearrange-pairs",
+      "fields": [],
+      "help": "沿用首排孔形簇，尽量保留旧配对；已签货架卡不动，被替换的旧候选不能再签架。",
+      "roles": [
+        "operator",
+        "reviewer"
+      ],
+      "success": "重排完成"
+    },
     {
       "name": "suggest_pair",
       "label": "计算同簇砖垛",
